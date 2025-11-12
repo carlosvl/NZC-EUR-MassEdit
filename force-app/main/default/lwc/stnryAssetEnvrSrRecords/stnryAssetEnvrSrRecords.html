@@ -1,0 +1,264 @@
+<template>
+    <lightning-card title="Related Records" icon-name="standard:related_list">
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-m-around_medium">
+                    <lightning-messages></lightning-messages>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <!-- Scope3PcmtSumr Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Scope 3 Procurement Summary</h2>
+                    <template if:true={scope3PcmtSumrRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Calendar Year">Calendar Year</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Currency Code">Currency Code</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Is Complete">Is Complete</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={scope3PcmtSumrRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Calendar Year">
+                                            <div class="slds-truncate">{record.CalendarYear__c}</div>
+                                        </td>
+                                        <td data-label="Currency Code">
+                                            <div class="slds-truncate">{record.CurrencyCode__c}</div>
+                                        </td>
+                                        <td data-label="Is Complete">
+                                            <div class="slds-truncate">
+                                                <template if:true={record.IsComplete__c}>Yes</template>
+                                                <template if:false={record.IsComplete__c}>No</template>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={scope3PcmtSumrRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- StnryAssetEnrgyl Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Energy</h2>
+                    <template if:true={stnryAssetEnrgylRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="End Date">End Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Final Energy Consumption">Final Energy Consumption</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="CO2 Emissions (kg)">CO2 Emissions (kg)</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={stnryAssetEnrgylRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="End Date">
+                                            <div class="slds-truncate">{record.EndDate__c}</div>
+                                        </td>
+                                        <td data-label="Final Energy Consumption">
+                                            <div class="slds-truncate">{record.FinalEnergyConsumption__c}</div>
+                                        </td>
+                                        <td data-label="CO2 Emissions">
+                                            <div class="slds-truncate">{record.Co2EmissionsInKg__c}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={stnryAssetEnrgylRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- StnryAssetWaterA Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Water</h2>
+                    <template if:true={stnryAssetWaterARecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Activity Type">Activity Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Final Water Quantity">Final Water Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Quantity Unit">Quantity Unit</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={stnryAssetWaterARecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Activity Type">
+                                            <div class="slds-truncate">{record.ActivityType__c}</div>
+                                        </td>
+                                        <td data-label="Final Water Quantity">
+                                            <div class="slds-truncate">{record.FinalWaterQuantity__c}</div>
+                                        </td>
+                                        <td data-label="Quantity Unit">
+                                            <div class="slds-truncate">{record.QuantityUnit__c}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={stnryAssetWaterARecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- StnryAssetEnvrSr Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Environmental Service</h2>
+                    <template if:true={stnryAssetEnvrSrRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Country">Country</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="City">City</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Business Region">Business Region</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={stnryAssetEnvrSrRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Country">
+                                            <div class="slds-truncate">{record.Country__c}</div>
+                                        </td>
+                                        <td data-label="City">
+                                            <div class="slds-truncate">{record.City__c}</div>
+                                        </td>
+                                        <td data-label="Business Region">
+                                            <div class="slds-truncate">{record.BusinessRegion__c}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={stnryAssetEnvrSrRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- GeneratedWaste Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Generated Waste</h2>
+                    <template if:true={generatedWasteRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Disposal Type">Disposal Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Disposed Waste Quantity">Disposed Waste Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Is Hazardous">Is Hazardous</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={generatedWasteRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Disposal Type">
+                                            <div class="slds-truncate">{record.DisposalType__c}</div>
+                                        </td>
+                                        <td data-label="Disposed Waste Quantity">
+                                            <div class="slds-truncate">{record.DisposedWasteQuantity__c}</div>
+                                        </td>
+                                        <td data-label="Is Hazardous">
+                                            <div class="slds-truncate">
+                                                <template if:true={record.IsHazardous__c}>Yes</template>
+                                                <template if:false={record.IsHazardous__c}>No</template>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={generatedWasteRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
+
