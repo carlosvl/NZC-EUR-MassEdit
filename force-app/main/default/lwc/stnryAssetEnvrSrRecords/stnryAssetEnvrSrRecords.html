@@ -1,0 +1,280 @@
+<template>
+    <lightning-card title="Related Records" icon-name="standard:related_list">
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-m-around_medium">
+                    <lightning-messages></lightning-messages>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <!-- Scope3PcmtSumr Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Scope 3 Procurement Summary</h2>
+                    <template if:true={scope3PcmtSumrRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Total Spent Amount">Total Spent Amount</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Scope 3 Carbon Footprint">Scope 3 Carbon Footprint</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={scope3PcmtSumrRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Total Spent Amount">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number value={record.TotalSpentAmount} format-style="currency"></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Scope 3 Carbon Footprint">
+                                            <div class="slds-truncate">{record.Scope3CrbnFtprntId}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={scope3PcmtSumrRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- StnryAssetEnrgyl Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Energy Use</h2>
+                    <template if:true={stnryAssetEnrgylRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Created Date">Created Date</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Fuel Type">Fuel Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Fuel Consumption">Fuel Consumption</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Unit">Unit</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={stnryAssetEnrgylRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Created Date">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-date-time value={record.CreatedDate}></lightning-formatted-date-time>
+                                            </div>
+                                        </td>
+                                        <td data-label="Fuel Type">
+                                            <div class="slds-truncate">{record.FuelType}</div>
+                                        </td>
+                                        <td data-label="Fuel Consumption">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number value={record.FuelConsumption}></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Unit">
+                                            <div class="slds-truncate">{record.FuelConsumptionUnit}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={stnryAssetEnrgylRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- StnryAssetWaterA Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Water Activity</h2>
+                    <template if:true={stnryAssetWaterARecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Activity Type">Activity Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Activity Source Type">Activity Source Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Treatment Type">Treatment Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Unit">Unit</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={stnryAssetWaterARecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Activity Type">
+                                            <div class="slds-truncate">{record.ActivityType}</div>
+                                        </td>
+                                        <td data-label="Activity Source Type">
+                                            <div class="slds-truncate">{record.ActivitySourceType}</div>
+                                        </td>
+                                        <td data-label="Treatment Type">
+                                            <div class="slds-truncate">{record.TreatmentType}</div>
+                                        </td>
+                                        <td data-label="Quantity">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number value={record.Quantity}></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Unit">
+                                            <div class="slds-truncate">{record.QuantityUnit}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={stnryAssetWaterARecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- StnryAssetEnvrSr Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Environmental Service</h2>
+                    <template if:true={stnryAssetEnvrSrRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Country">Country</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="City">City</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={stnryAssetEnvrSrRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Country">
+                                            <div class="slds-truncate">{record.Country}</div>
+                                        </td>
+                                        <td data-label="City">
+                                            <div class="slds-truncate">{record.City}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={stnryAssetEnvrSrRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+
+                <!-- GeneratedWaste Records -->
+                <div class="slds-m-bottom_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Generated Waste</h2>
+                    <template if:true={generatedWasteRecords.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Disposal Type">Disposal Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Disposal Site Type">Disposal Site Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Disposed Waste Quantity">Disposed Waste Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Waste Type">Waste Type</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={generatedWasteRecords} for:item="record">
+                                    <tr key={record.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Disposal Type">
+                                            <div class="slds-truncate">{record.DisposalType}</div>
+                                        </td>
+                                        <td data-label="Disposal Site Type">
+                                            <div class="slds-truncate">{record.DisposalSiteType}</div>
+                                        </td>
+                                        <td data-label="Disposed Waste Quantity">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number value={record.DisposedWasteQuantity}></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Waste Type">
+                                            <div class="slds-truncate">{record.WasteType}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={generatedWasteRecords.length}>
+                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
+
