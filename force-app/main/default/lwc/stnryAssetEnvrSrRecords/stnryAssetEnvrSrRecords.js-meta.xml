@@ -8,7 +8,7 @@
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
             <objects>
-                <object>StnryAssetEnvrSr__c</object>
+                <object>StnryAssetEnvrSrc</object>
             </objects>
         </targetConfig>
     </targetConfigs>

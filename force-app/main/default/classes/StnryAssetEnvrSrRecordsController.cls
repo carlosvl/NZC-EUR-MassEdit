@@ -26,7 +26,7 @@ public with sharing class StnryAssetEnvrSrRecordsController {
             if (fieldDescribe.getType() == Schema.DisplayType.REFERENCE) {
                 List<Schema.SObjectType> references = fieldDescribe.getReferenceTo();
                 for (Schema.SObjectType refType : references) {
-                    if (refType.getDescribe().getName() == 'StnryAssetEnvrSr__c') {
+                    if (refType.getDescribe().getName() == 'StnryAssetEnvrSrc') {
                         String apiName = fieldDescribe.getName();
                         relationshipFieldCache.put(sObjectName, apiName);
                         return apiName;
@@ -38,99 +38,118 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         return null;
     }
     
+    /**
+     * Finds unit-related fields on an object
+     * @param sObjectType The SObjectType to inspect
+     * @return Comma-separated list of unit field names
+     */
+    private static String findUnitFields(Schema.SObjectType sObjectType) {
+        List<String> unitFields = new List<String>();
+        Map<String, Schema.SObjectField> fieldMap = sObjectType.getDescribe().fields.getMap();
+        
+        for (String fieldName : fieldMap.keySet()) {
+            Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName).getDescribe();
+            String label = fieldDescribe.getLabel().toLowerCase();
+            String apiName = fieldDescribe.getName().toLowerCase();
+            
+            // Look for fields containing "unit", "qty", "quantity"
+            if (label.contains('unit') || apiName.contains('unit') || 
+                label.contains('quantity') || apiName.contains('quantity') ||
+                label.contains('qty') || apiName.contains('qty')) {
+                unitFields.add(fieldDescribe.getName());
+            }
+        }
+        
+        return String.join(unitFields, ', ');
+    }
+    
     @AuraEnabled(cacheable=true)
-    public static List<Scope3PcmtSumr__c> getScope3PcmtSumrRecords(Id recordId) {
+    public static List<Scope3PcmtSummary> getScope3PcmtSumrRecords(Id recordId) {
         try {
-            String relationshipField = findRelationshipField(Schema.Scope3PcmtSumr__c.SObjectType);
+            String relationshipField = findRelationshipField(Schema.Scope3PcmtSummary.SObjectType);
             
             if (relationshipField == null) {
-                return new List<Scope3PcmtSumr__c>();
+                return new List<Scope3PcmtSummary>();
             }
             
-            String query = 'SELECT Id, Name, CalendarYear__c, CurrencyCode__c, IsComplete__c, ' +
-                          'CarbonFootprintReportDate__c, Description__c, InflationRate__c ' +
-                          'FROM Scope3PcmtSumr__c ' +
+            String query = 'SELECT Id, Name, TotalSpentAmount, Scope3CrbnFtprntId ' +
+                          'FROM Scope3PcmtSummary ' +
                           'WHERE ' + relationshipField + ' = :recordId ' +
                           'ORDER BY Name LIMIT 1000';
             
             return Database.query(query);
         } catch (Exception e) {
-            throw new AuraHandledException('Error fetching Scope3PcmtSumr records: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching Scope3PcmtSummary records: ' + e.getMessage());
         }
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<StnryAssetEnrgyl__c> getStnryAssetEnrgylRecords(Id recordId) {
+    public static List<StnryAssetEnrgyUse> getStnryAssetEnrgylRecords(Id recordId) {
         try {
-            String relationshipField = findRelationshipField(Schema.StnryAssetEnrgyl__c.SObjectType);
+            String relationshipField = findRelationshipField(Schema.StnryAssetEnrgyUse.SObjectType);
             
             if (relationshipField == null) {
-                return new List<StnryAssetEnrgyl__c>();
+                return new List<StnryAssetEnrgyUse>();
             }
             
-            String query = 'SELECT Id, Name, EndDate__c, FinalEnergyConsumption__c, Co2EmissionsInKg__c, ' +
-                          'Ch4EmissionsInKg__c, FuelConsumption__c, CarbonFootprintReportDate__c ' +
-                          'FROM StnryAssetEnrgyl__c ' +
+            String query = 'SELECT Id, Name, CreatedDate, FuelType, FuelConsumption, FuelConsumptionUnit ' +
+                          'FROM StnryAssetEnrgyUse ' +
                           'WHERE ' + relationshipField + ' = :recordId ' +
                           'ORDER BY Name LIMIT 1000';
             
             return Database.query(query);
         } catch (Exception e) {
-            throw new AuraHandledException('Error fetching StnryAssetEnrgyl records: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching StnryAssetEnrgyUse records: ' + e.getMessage());
         }
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<StnryAssetWaterA__c> getStnryAssetWaterARecords(Id recordId) {
+    public static List<StnryAssetWaterActvty> getStnryAssetWaterARecords(Id recordId) {
         try {
-            String relationshipField = findRelationshipField(Schema.StnryAssetWaterA__c.SObjectType);
+            String relationshipField = findRelationshipField(Schema.StnryAssetWaterActvty.SObjectType);
             
             if (relationshipField == null) {
-                return new List<StnryAssetWaterA__c>();
+                return new List<StnryAssetWaterActvty>();
             }
             
-            String query = 'SELECT Id, Name, ActivityType__c, FinalWaterQuantity__c, QuantityUnit__c, ' +
-                          'StartDate__c, EndDate__c, Quantity__c, ProposedWaterQuantity__c ' +
-                          'FROM StnryAssetWaterA__c ' +
+            String query = 'SELECT Id, Name, ActivityType, ActivitySourceType, TreatmentType, Quantity, QuantityUnit ' +
+                          'FROM StnryAssetWaterActvty ' +
                           'WHERE ' + relationshipField + ' = :recordId ' +
                           'ORDER BY Name LIMIT 1000';
             
             return Database.query(query);
         } catch (Exception e) {
-            throw new AuraHandledException('Error fetching StnryAssetWaterA records: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching StnryAssetWaterActvty records: ' + e.getMessage());
         }
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<StnryAssetEnvrSr__c> getStnryAssetEnvrSrRecords(Id recordId) {
+    public static List<StnryAssetEnvrSrc> getStnryAssetEnvrSrRecords(Id recordId) {
         try {
-            // Query related StnryAssetEnvrSr records (if there's a parent-child relationship)
+            // Query related StnryAssetEnvrSrc records (if there's a parent-child relationship)
             // This might need adjustment based on your data model
             return [
-                SELECT Id, Name, Country__c, City__c, BusinessRegion__c,
-                       AccountName__c, OccupiedFloorArea__c
-                FROM StnryAssetEnvrSr__c
+                SELECT Id, Name, Country, City
+                FROM StnryAssetEnvrSrc
                 WHERE Id = :recordId
                 LIMIT 1
             ];
         } catch (Exception e) {
-            throw new AuraHandledException('Error fetching StnryAssetEnvrSr records: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching StnryAssetEnvrSrc records: ' + e.getMessage());
         }
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<GeneratedWaste__c> getGeneratedWasteRecords(Id recordId) {
+    public static List<GeneratedWaste> getGeneratedWasteRecords(Id recordId) {
         try {
-            String relationshipField = findRelationshipField(Schema.GeneratedWaste__c.SObjectType);
+            String relationshipField = findRelationshipField(Schema.GeneratedWaste.SObjectType);
             
             if (relationshipField == null) {
-                return new List<GeneratedWaste__c>();
+                return new List<GeneratedWaste>();
             }
             
-            String query = 'SELECT Id, Name, DisposalType__c, DisposedWasteQuantity__c, IsHazardous__c, ' +
-                          'IsRadioactive__c, EndDate__c, DisposedWasteQuantityUnit__c, ' +
-                          'Scope1EmissionsInTco2e__c ' +
-                          'FROM GeneratedWaste__c ' +
+            String query = 'SELECT Id, Name, DisposalType, DisposalSiteType, DisposedWasteQuantity, WasteType ' +
+                          'FROM GeneratedWaste ' +
                           'WHERE ' + relationshipField + ' = :recordId ' +
                           'ORDER BY Name LIMIT 1000';
             

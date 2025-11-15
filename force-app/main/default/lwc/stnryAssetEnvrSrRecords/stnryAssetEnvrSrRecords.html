@@ -23,13 +23,10 @@
                                         <div class="slds-truncate" title="Name">Name</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Calendar Year">Calendar Year</div>
+                                        <div class="slds-truncate" title="Total Spent Amount">Total Spent Amount</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Currency Code">Currency Code</div>
-                                    </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Is Complete">Is Complete</div>
+                                        <div class="slds-truncate" title="Scope 3 Carbon Footprint">Scope 3 Carbon Footprint</div>
                                     </th>
                                 </tr>
                             </thead>
@@ -41,17 +38,13 @@
                                                 <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
                                             </div>
                                         </td>
-                                        <td data-label="Calendar Year">
-                                            <div class="slds-truncate">{record.CalendarYear__c}</div>
-                                        </td>
-                                        <td data-label="Currency Code">
-                                            <div class="slds-truncate">{record.CurrencyCode__c}</div>
-                                        </td>
-                                        <td data-label="Is Complete">
+                                        <td data-label="Total Spent Amount">
                                             <div class="slds-truncate">
-                                                <template if:true={record.IsComplete__c}>Yes</template>
-                                                <template if:false={record.IsComplete__c}>No</template>
+                                                <lightning-formatted-number value={record.TotalSpentAmount} format-style="currency"></lightning-formatted-number>
                                             </div>
+                                        </td>
+                                        <td data-label="Scope 3 Carbon Footprint">
+                                            <div class="slds-truncate">{record.Scope3CrbnFtprntId}</div>
                                         </td>
                                     </tr>
                                 </template>
@@ -65,7 +58,7 @@
 
                 <!-- StnryAssetEnrgyl Records -->
                 <div class="slds-m-bottom_large">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Energy</h2>
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Energy Use</h2>
                     <template if:true={stnryAssetEnrgylRecords.length}>
                         <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
                             <thead>
@@ -74,13 +67,16 @@
                                         <div class="slds-truncate" title="Name">Name</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="End Date">End Date</div>
+                                        <div class="slds-truncate" title="Created Date">Created Date</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Final Energy Consumption">Final Energy Consumption</div>
+                                        <div class="slds-truncate" title="Fuel Type">Fuel Type</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="CO2 Emissions (kg)">CO2 Emissions (kg)</div>
+                                        <div class="slds-truncate" title="Fuel Consumption">Fuel Consumption</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Unit">Unit</div>
                                     </th>
                                 </tr>
                             </thead>
@@ -92,14 +88,21 @@
                                                 <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
                                             </div>
                                         </td>
-                                        <td data-label="End Date">
-                                            <div class="slds-truncate">{record.EndDate__c}</div>
+                                        <td data-label="Created Date">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-date-time value={record.CreatedDate}></lightning-formatted-date-time>
+                                            </div>
                                         </td>
-                                        <td data-label="Final Energy Consumption">
-                                            <div class="slds-truncate">{record.FinalEnergyConsumption__c}</div>
+                                        <td data-label="Fuel Type">
+                                            <div class="slds-truncate">{record.FuelType}</div>
                                         </td>
-                                        <td data-label="CO2 Emissions">
-                                            <div class="slds-truncate">{record.Co2EmissionsInKg__c}</div>
+                                        <td data-label="Fuel Consumption">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number value={record.FuelConsumption}></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Unit">
+                                            <div class="slds-truncate">{record.FuelConsumptionUnit}</div>
                                         </td>
                                     </tr>
                                 </template>
@@ -113,7 +116,7 @@
 
                 <!-- StnryAssetWaterA Records -->
                 <div class="slds-m-bottom_large">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Water</h2>
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Water Activity</h2>
                     <template if:true={stnryAssetWaterARecords.length}>
                         <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
                             <thead>
@@ -125,10 +128,16 @@
                                         <div class="slds-truncate" title="Activity Type">Activity Type</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Final Water Quantity">Final Water Quantity</div>
+                                        <div class="slds-truncate" title="Activity Source Type">Activity Source Type</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Quantity Unit">Quantity Unit</div>
+                                        <div class="slds-truncate" title="Treatment Type">Treatment Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Unit">Unit</div>
                                     </th>
                                 </tr>
                             </thead>
@@ -141,13 +150,21 @@
                                             </div>
                                         </td>
                                         <td data-label="Activity Type">
-                                            <div class="slds-truncate">{record.ActivityType__c}</div>
+                                            <div class="slds-truncate">{record.ActivityType}</div>
                                         </td>
-                                        <td data-label="Final Water Quantity">
-                                            <div class="slds-truncate">{record.FinalWaterQuantity__c}</div>
+                                        <td data-label="Activity Source Type">
+                                            <div class="slds-truncate">{record.ActivitySourceType}</div>
                                         </td>
-                                        <td data-label="Quantity Unit">
-                                            <div class="slds-truncate">{record.QuantityUnit__c}</div>
+                                        <td data-label="Treatment Type">
+                                            <div class="slds-truncate">{record.TreatmentType}</div>
+                                        </td>
+                                        <td data-label="Quantity">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number value={record.Quantity}></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Unit">
+                                            <div class="slds-truncate">{record.QuantityUnit}</div>
                                         </td>
                                     </tr>
                                 </template>
@@ -175,9 +192,6 @@
                                     <th scope="col">
                                         <div class="slds-truncate" title="City">City</div>
                                     </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Business Region">Business Region</div>
-                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -189,13 +203,10 @@
                                             </div>
                                         </td>
                                         <td data-label="Country">
-                                            <div class="slds-truncate">{record.Country__c}</div>
+                                            <div class="slds-truncate">{record.Country}</div>
                                         </td>
                                         <td data-label="City">
-                                            <div class="slds-truncate">{record.City__c}</div>
-                                        </td>
-                                        <td data-label="Business Region">
-                                            <div class="slds-truncate">{record.BusinessRegion__c}</div>
+                                            <div class="slds-truncate">{record.City}</div>
                                         </td>
                                     </tr>
                                 </template>
@@ -221,10 +232,13 @@
                                         <div class="slds-truncate" title="Disposal Type">Disposal Type</div>
                                     </th>
                                     <th scope="col">
+                                        <div class="slds-truncate" title="Disposal Site Type">Disposal Site Type</div>
+                                    </th>
+                                    <th scope="col">
                                         <div class="slds-truncate" title="Disposed Waste Quantity">Disposed Waste Quantity</div>
                                     </th>
                                     <th scope="col">
-                                        <div class="slds-truncate" title="Is Hazardous">Is Hazardous</div>
+                                        <div class="slds-truncate" title="Waste Type">Waste Type</div>
                                     </th>
                                 </tr>
                             </thead>
@@ -237,16 +251,18 @@
                                             </div>
                                         </td>
                                         <td data-label="Disposal Type">
-                                            <div class="slds-truncate">{record.DisposalType__c}</div>
+                                            <div class="slds-truncate">{record.DisposalType}</div>
+                                        </td>
+                                        <td data-label="Disposal Site Type">
+                                            <div class="slds-truncate">{record.DisposalSiteType}</div>
                                         </td>
                                         <td data-label="Disposed Waste Quantity">
-                                            <div class="slds-truncate">{record.DisposedWasteQuantity__c}</div>
-                                        </td>
-                                        <td data-label="Is Hazardous">
                                             <div class="slds-truncate">
-                                                <template if:true={record.IsHazardous__c}>Yes</template>
-                                                <template if:false={record.IsHazardous__c}>No</template>
+                                                <lightning-formatted-number value={record.DisposedWasteQuantity}></lightning-formatted-number>
                                             </div>
+                                        </td>
+                                        <td data-label="Waste Type">
+                                            <div class="slds-truncate">{record.WasteType}</div>
                                         </td>
                                     </tr>
                                 </template>
