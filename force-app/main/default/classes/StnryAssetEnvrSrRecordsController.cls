@@ -256,71 +256,16 @@ public with sharing class StnryAssetEnvrSrRecordsController {
                 newRecord.put(relationshipField, (Id)recordData.get('StnryAssetEnvrSrcId'));
             }
             
-            if (recordData.containsKey('Name') && recordData.get('Name') != null) {
-                newRecord.Name = String.valueOf(recordData.get('Name'));
-            }
-            
-            if (recordData.containsKey('WasteType') && recordData.get('WasteType') != null) {
-                String wasteType = String.valueOf(recordData.get('WasteType'));
-                if (String.isNotBlank(wasteType)) {
-                    newRecord.WasteType = wasteType;
-                }
-            }
-            
-            if (recordData.containsKey('DisposalType') && recordData.get('DisposalType') != null) {
-                String disposalType = String.valueOf(recordData.get('DisposalType'));
-                if (String.isNotBlank(disposalType)) {
-                    newRecord.DisposalType = disposalType;
-                }
-            }
-            
-            if (recordData.containsKey('DisposalSiteType') && recordData.get('DisposalSiteType') != null) {
-                String disposalSiteType = String.valueOf(recordData.get('DisposalSiteType'));
-                if (String.isNotBlank(disposalSiteType)) {
-                    newRecord.DisposalSiteType = disposalSiteType;
-                }
-            }
-            
-            if (recordData.containsKey('DisposedWasteQuantity') && recordData.get('DisposedWasteQuantity') != null) {
-                Object quantity = recordData.get('DisposedWasteQuantity');
-                String quantityStr = String.valueOf(quantity);
-                if (String.isNotBlank(quantityStr)) {
-                    newRecord.DisposedWasteQuantity = quantity instanceof Decimal ? 
-                        (Decimal)quantity : Decimal.valueOf(quantityStr);
-                }
-            }
-            
-            if (recordData.containsKey('DisposedWasteQuantityUnit') && recordData.get('DisposedWasteQuantityUnit') != null) {
-                String unit = String.valueOf(recordData.get('DisposedWasteQuantityUnit'));
-                if (String.isNotBlank(unit)) {
-                    newRecord.DisposedWasteQuantityUnit = unit;
-                }
-            }
-            
-            if (recordData.containsKey('StartDate') && recordData.get('StartDate') != null) {
-                Object startDateValue = recordData.get('StartDate');
-                if (startDateValue instanceof Date) {
-                    newRecord.StartDate = (Date)startDateValue;
-                } else if (startDateValue instanceof String && String.isNotBlank((String)startDateValue)) {
-                    newRecord.StartDate = Date.valueOf((String)startDateValue);
-                }
-            }
-            
-            if (recordData.containsKey('EndDate') && recordData.get('EndDate') != null) {
-                Object endDateValue = recordData.get('EndDate');
-                if (endDateValue instanceof Date) {
-                    newRecord.EndDate = (Date)endDateValue;
-                } else if (endDateValue instanceof String && String.isNotBlank((String)endDateValue)) {
-                    newRecord.EndDate = Date.valueOf((String)endDateValue);
-                }
-            }
-            
-            if (recordData.containsKey('WstDispoEmssnFctrId') && recordData.get('WstDispoEmssnFctrId') != null) {
-                String lookupId = String.valueOf(recordData.get('WstDispoEmssnFctrId'));
-                if (String.isNotBlank(lookupId)) {
-                    newRecord.WstDispoEmssnFctrId = (Id)recordData.get('WstDispoEmssnFctrId');
-                }
-            }
+            // Set field values using helper methods
+            setStringField(newRecord, 'Name', recordData);
+            setStringField(newRecord, 'WasteType', recordData);
+            setStringField(newRecord, 'DisposalType', recordData);
+            setStringField(newRecord, 'DisposalSiteType', recordData);
+            setStringField(newRecord, 'DisposedWasteQuantityUnit', recordData);
+            setDecimalField(newRecord, 'DisposedWasteQuantity', recordData);
+            setDateField(newRecord, 'StartDate', recordData);
+            setDateField(newRecord, 'EndDate', recordData);
+            setIdField(newRecord, 'WstDispoEmssnFctrId', recordData);
             
             if (!Schema.sObjectType.GeneratedWaste.isCreateable()) {
                 throw new AuraHandledException('Insufficient permissions to create GeneratedWaste records');
@@ -472,6 +417,69 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
         
         return options;
+    }
+    
+    /**
+     * @description Helper method to safely set a String field value from recordData
+     * @param record The SObject to update
+     * @param fieldName The API name of the field to set
+     * @param recordData The map containing field values
+     */
+    private static void setStringField(SObject record, String fieldName, Map<String, Object> recordData) {
+        if (recordData.containsKey(fieldName) && recordData.get(fieldName) != null) {
+            String value = String.valueOf(recordData.get(fieldName));
+            if (String.isNotBlank(value)) {
+                record.put(fieldName, value);
+            }
+        }
+    }
+    
+    /**
+     * @description Helper method to safely set a Date field value from recordData
+     * @param record The SObject to update
+     * @param fieldName The API name of the field to set
+     * @param recordData The map containing field values
+     */
+    private static void setDateField(SObject record, String fieldName, Map<String, Object> recordData) {
+        if (recordData.containsKey(fieldName) && recordData.get(fieldName) != null) {
+            Object dateValue = recordData.get(fieldName);
+            if (dateValue instanceof Date) {
+                record.put(fieldName, (Date)dateValue);
+            } else if (dateValue instanceof String && String.isNotBlank((String)dateValue)) {
+                record.put(fieldName, Date.valueOf((String)dateValue));
+            }
+        }
+    }
+    
+    /**
+     * @description Helper method to safely set a Decimal field value from recordData
+     * @param record The SObject to update
+     * @param fieldName The API name of the field to set
+     * @param recordData The map containing field values
+     */
+    private static void setDecimalField(SObject record, String fieldName, Map<String, Object> recordData) {
+        if (recordData.containsKey(fieldName) && recordData.get(fieldName) != null) {
+            Object value = recordData.get(fieldName);
+            String valueStr = String.valueOf(value);
+            if (String.isNotBlank(valueStr)) {
+                record.put(fieldName, value instanceof Decimal ? (Decimal)value : Decimal.valueOf(valueStr));
+            }
+        }
+    }
+    
+    /**
+     * @description Helper method to safely set an Id field value from recordData
+     * @param record The SObject to update
+     * @param fieldName The API name of the field to set
+     * @param recordData The map containing field values
+     */
+    private static void setIdField(SObject record, String fieldName, Map<String, Object> recordData) {
+        if (recordData.containsKey(fieldName) && recordData.get(fieldName) != null) {
+            String idValue = String.valueOf(recordData.get(fieldName));
+            if (String.isNotBlank(idValue)) {
+                record.put(fieldName, (Id)recordData.get(fieldName));
+            }
+        }
     }
 }
 
