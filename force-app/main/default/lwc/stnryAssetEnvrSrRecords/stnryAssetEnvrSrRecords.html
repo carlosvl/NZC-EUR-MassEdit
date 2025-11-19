@@ -1,5 +1,29 @@
+<!--
+  Copyright 2025 Salesforce, Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
 <template>
     <lightning-card title="Related Records" icon-name="standard:related_list">
+        <div slot="actions">
+            <lightning-button 
+                label="New Record" 
+                icon-name="utility:add" 
+                variant="brand"
+                onclick={handleNewRecord}>
+            </lightning-button>
+        </div>
         <div class="slds-card__body slds-card__body_inner">
             <template if:true={isLoading}>
                 <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
@@ -175,49 +199,6 @@
                         <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
                     </template>
                 </div>
-
-                <!-- StnryAssetEnvrSr Records -->
-                <div class="slds-m-bottom_large">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Stationary Asset Environmental Service</h2>
-                    <template if:true={stnryAssetEnvrSrRecords.length}>
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
-                            <thead>
-                                <tr class="slds-line-height_reset">
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Name">Name</div>
-                                    </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="Country">Country</div>
-                                    </th>
-                                    <th scope="col">
-                                        <div class="slds-truncate" title="City">City</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template for:each={stnryAssetEnvrSrRecords} for:item="record">
-                                    <tr key={record.Id}>
-                                        <td data-label="Name">
-                                            <div class="slds-truncate">
-                                                <a href="javascript:void(0);" data-id={record.Id} onclick={navigateToRecord} class="slds-text-link">{record.Name}</a>
-                                            </div>
-                                        </td>
-                                        <td data-label="Country">
-                                            <div class="slds-truncate">{record.Country}</div>
-                                        </td>
-                                        <td data-label="City">
-                                            <div class="slds-truncate">{record.City}</div>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </template>
-                    <template if:false={stnryAssetEnvrSrRecords.length}>
-                        <p class="slds-text-body_regular slds-text-color_weak">No records found</p>
-                    </template>
-                </div>
-
                 <!-- GeneratedWaste Records -->
                 <div class="slds-m-bottom_large">
                     <h2 class="slds-text-heading_medium slds-m-bottom_small">Generated Waste</h2>
@@ -275,6 +256,273 @@
                 </div>
             </template>
         </div>
+
+        <!-- Modal for creating new records -->
+        <template if:true={showModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="Close" 
+                                onclick={handleCloseModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate">Create New Record</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template if:true={showRecordTypeSelection}>
+                            <p class="slds-m-bottom_medium">Select the type of record you want to create:</p>
+                            
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <button class="slds-button slds-button_neutral slds-button_stretch record-type-button" 
+                                            data-type="Scope3PcmtSumr" 
+                                            onclick={handleRecordTypeSelect}>
+                                        <lightning-icon icon-name="standard:product" size="small" class="slds-m-right_small"></lightning-icon>
+                                        Scope 3 Procurement Summary
+                                    </button>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <button class="slds-button slds-button_neutral slds-button_stretch record-type-button" 
+                                            data-type="StnryAssetEnrgyl" 
+                                            onclick={handleRecordTypeSelect}>
+                                        <lightning-icon icon-name="standard:energy" size="small" class="slds-m-right_small"></lightning-icon>
+                                        Stationary Asset Energy Use
+                                    </button>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <button class="slds-button slds-button_neutral slds-button_stretch record-type-button" 
+                                            data-type="StnryAssetWaterA" 
+                                            onclick={handleRecordTypeSelect}>
+                                        <lightning-icon icon-name="standard:water" size="small" class="slds-m-right_small"></lightning-icon>
+                                        Stationary Asset Water Activity
+                                    </button>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small">
+                                    <button class="slds-button slds-button_neutral slds-button_stretch record-type-button" 
+                                            data-type="GeneratedWaste" 
+                                            onclick={handleRecordTypeSelect}>
+                                        <lightning-icon icon-name="standard:recycle_bin" size="small" class="slds-m-right_small"></lightning-icon>
+                                        Generated Waste
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template if:false={showRecordTypeSelection}>
+                            <div class="slds-form" role="list">
+                                <!-- Scope 3 Procurement Summary Form -->
+                                <template if:true={isScope3PcmtSumr}>
+                                    <lightning-input
+                                        label="Name"
+                                        name="Name"
+                                        value={formData.Name}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-input>
+                                    
+                                    <lightning-input
+                                        label="Scope 3 Carbon Footprint"
+                                        name="Scope3CrbnFtprntId"
+                                        value={formData.Scope3CrbnFtprntId}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                </template>
+
+                                <!-- Stationary Asset Energy Use Form -->
+                                <template if:true={isStnryAssetEnrgyl}>
+                                    <lightning-input
+                                        label="Name"
+                                        name="Name"
+                                        value={formData.Name}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-input>
+                                    
+                                    <lightning-combobox
+                                        label="Fuel Type"
+                                        name="FuelType"
+                                        value={formData.FuelType}
+                                        placeholder="Select Fuel Type"
+                                        options={fuelTypeOptions}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-combobox>
+                                    
+                                    <lightning-input
+                                        label="Fuel Consumption"
+                                        name="FuelConsumption"
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.FuelConsumption}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                    
+                                    <lightning-combobox
+                                        label="Unit"
+                                        name="FuelConsumptionUnit"
+                                        value={formData.FuelConsumptionUnit}
+                                        placeholder="Select Unit"
+                                        options={unitOptions}
+                                        onchange={handleInputChange}>
+                                    </lightning-combobox>
+                                </template>
+
+                                <!-- Stationary Asset Water Activity Form -->
+                                <template if:true={isStnryAssetWaterA}>
+                                    <lightning-input
+                                        label="Name"
+                                        name="Name"
+                                        value={formData.Name}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-input>
+                                    
+                                    <lightning-combobox
+                                        label="Activity Type"
+                                        name="ActivityType"
+                                        value={formData.ActivityType}
+                                        placeholder="Select Activity Type"
+                                        options={activityTypeOptions}
+                                        onchange={handleInputChange}>
+                                    </lightning-combobox>
+                                    
+                                    <lightning-input
+                                        label="Activity Source Type"
+                                        name="ActivitySourceType"
+                                        value={formData.ActivitySourceType}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                    
+                                    <lightning-input
+                                        label="Treatment Type"
+                                        name="TreatmentType"
+                                        value={formData.TreatmentType}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                    
+                                    <lightning-input
+                                        label="Quantity"
+                                        name="Quantity"
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.Quantity}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                    
+                                    <lightning-combobox
+                                        label="Unit"
+                                        name="QuantityUnit"
+                                        value={formData.QuantityUnit}
+                                        placeholder="Select Unit"
+                                        options={quantityUnitOptions}
+                                        onchange={handleInputChange}>
+                                    </lightning-combobox>
+                                </template>
+                                <!-- Generated Waste Form -->
+                                <template if:true={isGeneratedWaste}>
+                                    <lightning-input
+                                        label="Name"
+                                        name="Name"
+                                        value={formData.Name}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-input>
+                                    
+                                    <lightning-combobox
+                                        label="Disposal Type"
+                                        name="DisposalType"
+                                        value={formData.DisposalType}
+                                        placeholder="Select Disposal Type"
+                                        options={disposalTypeOptions}
+                                        onchange={handleInputChange}>
+                                    </lightning-combobox>
+                                    
+                                    <lightning-combobox
+                                        label="Waste Type"
+                                        name="WasteType"
+                                        value={formData.WasteType}
+                                        placeholder="Select Waste Type"
+                                        options={wasteTypeOptions}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-combobox>
+                                    
+                                    <lightning-combobox
+                                        label="Disposal Site Type"
+                                        name="DisposalSiteType"
+                                        value={formData.DisposalSiteType}
+                                        placeholder="Select Disposal Site Type"
+                                        options={disposalSiteTypeOptions}
+                                        onchange={handleInputChange}>
+                                    </lightning-combobox>
+                                    
+                                    <lightning-input
+                                        label="Disposed Waste Quantity"
+                                        name="DisposedWasteQuantity"
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.DisposedWasteQuantity}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-input>
+                                    
+                                    <lightning-combobox
+                                        label="Disposed Waste Quantity Unit"
+                                        name="DisposedWasteQuantityUnit"
+                                        value={formData.DisposedWasteQuantityUnit}
+                                        placeholder="Select Unit"
+                                        options={disposedWasteQuantityUnitOptions}
+                                        onchange={handleInputChange}
+                                        required>
+                                    </lightning-combobox>
+                                    
+                                    <lightning-input
+                                        type="date"
+                                        label="Start Date"
+                                        name="StartDate"
+                                        value={formData.StartDate}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                    
+                                    <lightning-input
+                                        type="date"
+                                        label="End Date"
+                                        name="EndDate"
+                                        value={formData.EndDate}
+                                        onchange={handleInputChange}>
+                                    </lightning-input>
+                                    
+                                    <lightning-record-picker
+                                        label="Waste Disposal Emission Factor"
+                                        placeholder="Search Waste Disposal Emission Factors..."
+                                        object-api-name="WstDispoEmssnFctrSet"
+                                        value={formData.WstDispoEmssnFctrId}
+                                        onchange={handleLookupChange}>
+                                    </lightning-record-picker>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <footer class="slds-modal__footer">
+                        <template if:true={showRecordTypeSelection}>
+                            <button class="slds-button slds-button_neutral" onclick={handleCloseModal}>Cancel</button>
+                        </template>
+                        <template if:false={showRecordTypeSelection}>
+                            <button class="slds-button slds-button_neutral" onclick={handleBackToSelection}>Back</button>
+                            <button class="slds-button slds-button_brand" onclick={handleSave}>Save</button>
+                        </template>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
     </lightning-card>
 </template>
 

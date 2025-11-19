@@ -1,0 +1,15 @@
+Recommended GitHub Topics for this Repository:
+
+salesforce
+salesforce-accelerator
+lightning-web-components
+lwc
+apex
+net-zero-cloud
+environmental-data
+sustainability
+carbon-footprint
+open-source
+
+Repository Description:
+Salesforce LWC accelerator for managing environmental records related to Stationary Asset Environmental Sources
