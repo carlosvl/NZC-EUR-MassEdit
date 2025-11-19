@@ -1,2 +1,14 @@
 /* Lightning Design System CSS - Reference: https://lightningdesignsystem.com/2e1ef8501 */
 
+.record-type-button {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+
+.record-type-button:hover {
+    background-color: #f3f3f3;
+    border-color: #0176d3;
+}

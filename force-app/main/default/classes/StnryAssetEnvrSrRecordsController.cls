@@ -61,22 +61,6 @@ public with sharing class StnryAssetEnvrSrRecordsController {
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<StnryAssetEnvrSrc> getStnryAssetEnvrSrRecords(Id recordId) {
-        try {
-            // Query related StnryAssetEnvrSrc records (if there's a parent-child relationship)
-            // This might need adjustment based on your data model
-            return [
-                SELECT Id, Name, Country, City
-                FROM StnryAssetEnvrSrc
-                WHERE Id = :recordId
-                LIMIT 1
-            ];
-        } catch (Exception e) {
-            throw new AuraHandledException('Error fetching StnryAssetEnvrSrc records: ' + e.getMessage());
-        }
-    }
-    
-    @AuraEnabled(cacheable=true)
     public static List<GeneratedWaste> getGeneratedWasteRecords(Id recordId) {
         try {
             String relationshipField = findRelationshipField(Schema.GeneratedWaste.SObjectType);
@@ -116,6 +100,10 @@ public with sharing class StnryAssetEnvrSrRecordsController {
                 newRecord.Scope3CrbnFtprntId = (String)recordData.get('Scope3CrbnFtprntId');
             }
             
+            if (!Schema.sObjectType.Scope3PcmtSummary.isCreateable()) {
+                throw new AuraHandledException('Insufficient permissions to create Scope3PcmtSummary records');
+            }
+            
             insert newRecord;
             return newRecord.Id;
         } catch (Exception e) {
@@ -151,6 +139,10 @@ public with sharing class StnryAssetEnvrSrRecordsController {
             }
             if (recordData.containsKey('FuelConsumptionUnit')) {
                 newRecord.FuelConsumptionUnit = (String)recordData.get('FuelConsumptionUnit');
+            }
+            
+            if (!Schema.sObjectType.StnryAssetEnrgyUse.isCreateable()) {
+                throw new AuraHandledException('Insufficient permissions to create StnryAssetEnrgyUse records');
             }
             
             insert newRecord;
@@ -196,6 +188,10 @@ public with sharing class StnryAssetEnvrSrRecordsController {
                 newRecord.QuantityUnit = (String)recordData.get('QuantityUnit');
             }
             
+            if (!Schema.sObjectType.StnryAssetWaterActvty.isCreateable()) {
+                throw new AuraHandledException('Insufficient permissions to create StnryAssetWaterActvty records');
+            }
+            
             insert newRecord;
             return newRecord.Id;
         } catch (Exception e) {
@@ -204,31 +200,15 @@ public with sharing class StnryAssetEnvrSrRecordsController {
     }
     
     @AuraEnabled
-    public static Id createStnryAssetEnvrSrRecord(Map<String, Object> recordData) {
-        try {
-            StnryAssetEnvrSrc newRecord = new StnryAssetEnvrSrc();
-            
-            // Set fields from form data
-            if (recordData.containsKey('Name')) {
-                newRecord.Name = (String)recordData.get('Name');
-            }
-            if (recordData.containsKey('Country')) {
-                newRecord.Country = (String)recordData.get('Country');
-            }
-            if (recordData.containsKey('City')) {
-                newRecord.City = (String)recordData.get('City');
-            }
-            
-            insert newRecord;
-            return newRecord.Id;
-        } catch (Exception e) {
-            throw new AuraHandledException('Error creating StnryAssetEnvrSrc record: ' + e.getMessage());
-        }
-    }
-    
-    @AuraEnabled
     public static Id createGeneratedWasteRecord(Map<String, Object> recordData) {
         try {
+            // Validate required fields
+            if (!recordData.containsKey('WasteType') || 
+                recordData.get('WasteType') == null || 
+                String.isBlank(String.valueOf(recordData.get('WasteType')))) {
+                throw new AuraHandledException('Waste Type is required. Please select a value.');
+            }
+            
             GeneratedWaste newRecord = new GeneratedWaste();
             String relationshipField = findRelationshipField(Schema.GeneratedWaste.SObjectType);
             
@@ -236,43 +216,76 @@ public with sharing class StnryAssetEnvrSrRecordsController {
                 newRecord.put(relationshipField, (Id)recordData.get('StnryAssetEnvrSrcId'));
             }
             
-            if (recordData.containsKey('Name')) {
-                Object nameValue = recordData.get('Name');
-                if (nameValue != null && String.isNotBlank(String.valueOf(nameValue))) {
-                    newRecord.Name = String.valueOf(nameValue);
+            if (recordData.containsKey('Name') && recordData.get('Name') != null) {
+                newRecord.Name = String.valueOf(recordData.get('Name'));
+            }
+            
+            if (recordData.containsKey('WasteType') && recordData.get('WasteType') != null) {
+                String wasteType = String.valueOf(recordData.get('WasteType'));
+                if (String.isNotBlank(wasteType)) {
+                    newRecord.WasteType = wasteType;
                 }
             }
             
-            if (recordData.containsKey('DisposalType')) {
-                Object disposalTypeValue = recordData.get('DisposalType');
-                if (disposalTypeValue != null && String.isNotBlank(String.valueOf(disposalTypeValue))) {
-                    newRecord.DisposalType = String.valueOf(disposalTypeValue);
+            if (recordData.containsKey('DisposalType') && recordData.get('DisposalType') != null) {
+                String disposalType = String.valueOf(recordData.get('DisposalType'));
+                if (String.isNotBlank(disposalType)) {
+                    newRecord.DisposalType = disposalType;
                 }
             }
             
-            if (recordData.containsKey('DisposalSiteType')) {
-                Object disposalSiteTypeValue = recordData.get('DisposalSiteType');
-                if (disposalSiteTypeValue != null && String.isNotBlank(String.valueOf(disposalSiteTypeValue))) {
-                    newRecord.DisposalSiteType = String.valueOf(disposalSiteTypeValue);
+            if (recordData.containsKey('DisposalSiteType') && recordData.get('DisposalSiteType') != null) {
+                String disposalSiteType = String.valueOf(recordData.get('DisposalSiteType'));
+                if (String.isNotBlank(disposalSiteType)) {
+                    newRecord.DisposalSiteType = disposalSiteType;
                 }
             }
             
-            if (recordData.containsKey('DisposedWasteQuantity')) {
-                Object disposedWasteQuantity = recordData.get('DisposedWasteQuantity');
-                if (disposedWasteQuantity != null && String.isNotBlank(String.valueOf(disposedWasteQuantity))) {
-                    newRecord.DisposedWasteQuantity = disposedWasteQuantity instanceof String ? 
-                        Decimal.valueOf((String)disposedWasteQuantity) : 
-                        (Decimal)disposedWasteQuantity;
+            if (recordData.containsKey('DisposedWasteQuantity') && recordData.get('DisposedWasteQuantity') != null) {
+                Object quantity = recordData.get('DisposedWasteQuantity');
+                String quantityStr = String.valueOf(quantity);
+                if (String.isNotBlank(quantityStr)) {
+                    newRecord.DisposedWasteQuantity = quantity instanceof Decimal ? 
+                        (Decimal)quantity : Decimal.valueOf(quantityStr);
                 }
             }
             
-            if (recordData.containsKey('WasteType')) {
-                Object wasteTypeValue = recordData.get('WasteType');
-                if (wasteTypeValue != null && String.isNotBlank(String.valueOf(wasteTypeValue))) {
-                    newRecord.WasteType = String.valueOf(wasteTypeValue);
+            if (recordData.containsKey('DisposedWasteQuantityUnit') && recordData.get('DisposedWasteQuantityUnit') != null) {
+                String unit = String.valueOf(recordData.get('DisposedWasteQuantityUnit'));
+                if (String.isNotBlank(unit)) {
+                    newRecord.DisposedWasteQuantityUnit = unit;
                 }
             }
             
+            if (recordData.containsKey('StartDate') && recordData.get('StartDate') != null) {
+                Object startDateValue = recordData.get('StartDate');
+                if (startDateValue instanceof Date) {
+                    newRecord.StartDate = (Date)startDateValue;
+                } else if (startDateValue instanceof String && String.isNotBlank((String)startDateValue)) {
+                    newRecord.StartDate = Date.valueOf((String)startDateValue);
+                }
+            }
+            
+            if (recordData.containsKey('EndDate') && recordData.get('EndDate') != null) {
+                Object endDateValue = recordData.get('EndDate');
+                if (endDateValue instanceof Date) {
+                    newRecord.EndDate = (Date)endDateValue;
+                } else if (endDateValue instanceof String && String.isNotBlank((String)endDateValue)) {
+                    newRecord.EndDate = Date.valueOf((String)endDateValue);
+                }
+            }
+            
+            if (recordData.containsKey('WstDispoEmssnFctrId') && recordData.get('WstDispoEmssnFctrId') != null) {
+                String lookupId = String.valueOf(recordData.get('WstDispoEmssnFctrId'));
+                if (String.isNotBlank(lookupId)) {
+                    newRecord.WstDispoEmssnFctrId = (Id)recordData.get('WstDispoEmssnFctrId');
+                }
+            }
+            
+            if (!Schema.sObjectType.GeneratedWaste.isCreateable()) {
+                throw new AuraHandledException('Insufficient permissions to create GeneratedWaste records');
+            }
+
             insert newRecord;
             return newRecord.Id;
         } catch (Exception e) {
@@ -302,6 +315,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
             // WasteType
             if (wasteFields.containsKey('WasteType')) {
                 picklistMap.put('WasteType', getPicklistOptions(wasteFields.get('WasteType')));
+            }
+            
+            // DisposedWasteQuantityUnit
+            if (wasteFields.containsKey('DisposedWasteQuantityUnit')) {
+                picklistMap.put('DisposedWasteQuantityUnit', getPicklistOptions(wasteFields.get('DisposedWasteQuantityUnit')));
             }
             
             // Get StnryAssetEnrgyUse picklist values

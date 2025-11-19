@@ -6,12 +6,10 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getScope3PcmtSumrRecords from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getScope3PcmtSumrRecords';
 import getStnryAssetEnrgylRecords from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getStnryAssetEnrgylRecords';
 import getStnryAssetWaterARecords from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getStnryAssetWaterARecords';
-import getStnryAssetEnvrSrRecords from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getStnryAssetEnvrSrRecords';
 import getGeneratedWasteRecords from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getGeneratedWasteRecords';
 import createScope3PcmtSumrRecord from '@salesforce/apex/StnryAssetEnvrSrRecordsController.createScope3PcmtSumrRecord';
 import createStnryAssetEnrgylRecord from '@salesforce/apex/StnryAssetEnvrSrRecordsController.createStnryAssetEnrgylRecord';
 import createStnryAssetWaterARecord from '@salesforce/apex/StnryAssetEnvrSrRecordsController.createStnryAssetWaterARecord';
-import createStnryAssetEnvrSrRecord from '@salesforce/apex/StnryAssetEnvrSrRecordsController.createStnryAssetEnvrSrRecord';
 import createGeneratedWasteRecord from '@salesforce/apex/StnryAssetEnvrSrRecordsController.createGeneratedWasteRecord';
 import getPicklistValues from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getPicklistValues';
 import getDependentPicklistValues from '@salesforce/apex/StnryAssetEnvrSrRecordsController.getDependentPicklistValues';
@@ -24,7 +22,6 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
     scope3PcmtSumrRecords = [];
     stnryAssetEnrgylRecords = [];
     stnryAssetWaterARecords = [];
-    stnryAssetEnvrSrRecords = [];
     generatedWasteRecords = [];
     
     isLoading = true;
@@ -45,6 +42,7 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
     disposalTypeOptions = [];
     disposalSiteTypeOptions = [];
     wasteTypeOptions = [];
+    disposedWasteQuantityUnitOptions = [];
 
     // Computed properties for form visibility
     get isScope3PcmtSumr() {
@@ -59,9 +57,6 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
         return this.selectedRecordType === 'StnryAssetWaterA';
     }
 
-    get isStnryAssetEnvrSr() {
-        return this.selectedRecordType === 'StnryAssetEnvrSr';
-    }
 
     get isGeneratedWaste() {
         return this.selectedRecordType === 'GeneratedWaste';
@@ -81,6 +76,7 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
             this.disposalTypeOptions = data.DisposalType || [];
             this.disposalSiteTypeOptions = data.DisposalSiteType || [];
             this.wasteTypeOptions = data.WasteType || [];
+            this.disposedWasteQuantityUnitOptions = data.DisposedWasteQuantityUnit || [];
         } catch (error) {
             console.error('Error loading picklist values:', error);
             this.setFallbackPicklistOptions();
@@ -155,7 +151,6 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
                 this.loadScope3PcmtSumrRecords(),
                 this.loadStnryAssetEnrgylRecords(),
                 this.loadStnryAssetWaterARecords(),
-                this.loadStnryAssetEnvrSrRecords(),
                 this.loadGeneratedWasteRecords()
             ]);
         } finally {
@@ -193,15 +188,6 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
         }
     }
 
-    async loadStnryAssetEnvrSrRecords() {
-        try {
-            const result = await getStnryAssetEnvrSrRecords({ recordId: this.recordId });
-            this.stnryAssetEnvrSrRecords = result || [];
-        } catch (error) {
-            console.error('Error loading StnryAssetEnvrSr records:', error);
-            this.error = error;
-        }
-    }
 
     async loadGeneratedWasteRecords() {
         try {
@@ -257,6 +243,11 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
         };
     }
 
+    handleLookupChange(event) {
+        const recordId = event.detail.recordId;
+        this.formData = { ...this.formData, WstDispoEmssnFctrId: recordId };
+    }
+
     async handleInputChange(event) {
         const field = event.target.name;
         const value = event.target.value;
@@ -284,6 +275,20 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
             return;
         }
 
+        // Additional validation for GeneratedWaste required fields
+        if (this.selectedRecordType === 'GeneratedWaste') {
+            if (!this.formData.WasteType || this.formData.WasteType === '') {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Validation Error',
+                        message: 'Please select a Waste Type',
+                        variant: 'error'
+                    })
+                );
+                return;
+            }
+        }
+
         this.isLoading = true;
         try {
             let recordId;
@@ -296,9 +301,6 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
                     break;
                 case 'StnryAssetWaterA':
                     recordId = await createStnryAssetWaterARecord({ recordData: this.formData });
-                    break;
-                case 'StnryAssetEnvrSr':
-                    recordId = await createStnryAssetEnvrSrRecord({ recordData: this.formData });
                     break;
                 case 'GeneratedWaste':
                     recordId = await createGeneratedWasteRecord({ recordData: this.formData });
