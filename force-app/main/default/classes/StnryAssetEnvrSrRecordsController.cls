@@ -1,7 +1,17 @@
+/**
+ * @description Controller class for managing related environmental records for Stationary Asset Environmental Source
+ * Provides methods to query and create related records including Scope3PcmtSummary, StnryAssetEnrgyUse,
+ * StnryAssetWaterActvty, and GeneratedWaste records
+ */
 public with sharing class StnryAssetEnvrSrRecordsController {
     
     private static Map<String, String> sObjectNameToRelationshipField = new Map<String, String>();
     
+    /**
+     * @description Retrieves Scope3PcmtSummary records related to the specified Stationary Asset Environmental Source
+     * @param recordId The ID of the StnryAssetEnvrSrc record
+     * @return List of Scope3PcmtSummary records related to the specified record
+     */
     @AuraEnabled(cacheable=true)
     public static List<Scope3PcmtSummary> getScope3PcmtSumrRecords(Id recordId) {
         try {
@@ -20,6 +30,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Retrieves StnryAssetEnrgyUse records related to the specified Stationary Asset Environmental Source
+     * @param recordId The ID of the StnryAssetEnvrSrc record
+     * @return List of StnryAssetEnrgyUse records related to the specified record
+     */
     @AuraEnabled(cacheable=true)
     public static List<StnryAssetEnrgyUse> getStnryAssetEnrgylRecords(Id recordId) {
         try {
@@ -40,6 +55,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Retrieves StnryAssetWaterActvty records related to the specified Stationary Asset Environmental Source
+     * @param recordId The ID of the StnryAssetEnvrSrc record
+     * @return List of StnryAssetWaterActvty records related to the specified record
+     */
     @AuraEnabled(cacheable=true)
     public static List<StnryAssetWaterActvty> getStnryAssetWaterARecords(Id recordId) {
         try {
@@ -60,6 +80,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Retrieves GeneratedWaste records related to the specified Stationary Asset Environmental Source
+     * @param recordId The ID of the StnryAssetEnvrSrc record
+     * @return List of GeneratedWaste records related to the specified record
+     */
     @AuraEnabled(cacheable=true)
     public static List<GeneratedWaste> getGeneratedWasteRecords(Id recordId) {
         try {
@@ -111,6 +136,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Creates a new StnryAssetEnrgyUse record with the provided data
+     * @param recordData Map containing field values for the new record
+     * @return ID of the newly created StnryAssetEnrgyUse record
+     */
     @AuraEnabled
     public static Id createStnryAssetEnrgylRecord(Map<String, Object> recordData) {
         try {
@@ -152,6 +182,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Creates a new StnryAssetWaterActvty record with the provided data
+     * @param recordData Map containing field values for the new record
+     * @return ID of the newly created StnryAssetWaterActvty record
+     */
     @AuraEnabled
     public static Id createStnryAssetWaterARecord(Map<String, Object> recordData) {
         try {
@@ -199,6 +234,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Creates a new GeneratedWaste record with the provided data
+     * @param recordData Map containing field values for the new record including WasteType (required)
+     * @return ID of the newly created GeneratedWaste record
+     */
     @AuraEnabled
     public static Id createGeneratedWasteRecord(Map<String, Object> recordData) {
         try {
@@ -293,6 +333,10 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Retrieves picklist values for various fields used in the related record forms
+     * @return Map of field names to their picklist options (label and value pairs)
+     */
     @AuraEnabled(cacheable=true)
     public static Map<String, List<Map<String, String>>> getPicklistValues() {
         Map<String, List<Map<String, String>>> picklistMap = new Map<String, List<Map<String, String>>>();
@@ -357,6 +401,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         return picklistMap;
     }
     
+    /**
+     * @description Retrieves dependent picklist values for WasteType based on the controlling field value
+     * @param controllingValue The value of the controlling field (DisposalType)
+     * @return List of picklist options (label and value pairs) for the dependent field
+     */
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getDependentPicklistValues(String controllingValue) {
         List<Map<String, String>> options = new List<Map<String, String>>();
