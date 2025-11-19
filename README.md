@@ -58,15 +58,13 @@ This accelerator contains:
 
 Click the button below to deploy directly to your Salesforce org:
 
-[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com/?owner=YOUR_GITHUB_USERNAME&repo=NZC-EUR-MassEdit)
-
-> **Note**: Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username before using this button.
+[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com/?owner=carlosvl&repo=NZC-EUR-MassEdit)
 
 ### Option 2: Salesforce CLI (Recommended for Developers)
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_GITHUB_USERNAME/NZC-EUR-MassEdit.git
+git clone https://github.com/carlosvl/NZC-EUR-MassEdit.git
 cd NZC-EUR-MassEdit
 
 # 2. Authorize your Salesforce org
@@ -81,7 +79,7 @@ sf project deploy report
 
 ### Option 3: Metadata ZIP File (Alternative for Admins)
 
-1. Download the latest release ZIP file from the [Releases](https://github.com/YOUR_GITHUB_USERNAME/NZC-EUR-MassEdit/releases) page
+1. Download the latest release ZIP file from the [Releases](https://github.com/carlosvl/NZC-EUR-MassEdit/releases) page
 2. Use **Workbench** or **Salesforce Inspector** to deploy:
    - Navigate to: Setup → Deploy → Choose File
    - Select the downloaded ZIP file
@@ -166,7 +164,7 @@ Before deploying to production:
 
 ## 🐛 Reporting Issues
 
-Found a bug or have a feature request? Please create an issue on our [GitHub Issues](https://github.com/YOUR_GITHUB_USERNAME/NZC-EUR-MassEdit/issues) page.
+Found a bug or have a feature request? Please create an issue on our [GitHub Issues](https://github.com/carlosvl/NZC-EUR-MassEdit/issues) page.
 
 When reporting bugs, please include:
 - Steps to reproduce

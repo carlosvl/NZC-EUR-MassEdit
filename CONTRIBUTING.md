@@ -64,7 +64,7 @@ All contributions must pass:
 ## Development Setup
 
 1. Install Salesforce CLI: `npm install -g @salesforce/cli`
-2. Clone the repository: `git clone https://github.com/YOUR_USERNAME/NZC-EUR-MassEdit.git`
+2. Clone the repository: `git clone https://github.com/carlosvl/NZC-EUR-MassEdit.git`
 3. Create a scratch org: `sf org create scratch -f config/project-scratch-def.json -a my-scratch`
 4. Deploy the code: `sf project deploy start`
 5. Run tests: `sf apex run test --test-level RunLocalTests`
