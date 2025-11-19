@@ -312,7 +312,7 @@ export default class StnryAssetEnvrSrRecords extends NavigationMixin(LightningEl
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
-                    message: 'Record created successfully',
+                    message: `Record created successfully (ID: ${recordId})`,
                     variant: 'success'
                 })
             );

@@ -105,6 +105,11 @@ public with sharing class StnryAssetEnvrSrRecordsController {
         }
     }
     
+    /**
+     * @description Creates a new Scope3PcmtSummary record with the provided data
+     * @param recordData Map containing field values for the new record
+     * @return ID of the newly created Scope3PcmtSummary record
+     */
     @AuraEnabled
     public static Id createScope3PcmtSumrRecord(Map<String, Object> recordData) {
         try {
