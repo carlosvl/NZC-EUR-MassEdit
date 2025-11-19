@@ -351,7 +351,7 @@ public with sharing class StnryAssetEnvrSrRecordsController {
             }
             
         } catch (Exception e) {
-            System.debug('Error getting picklist values: ' + e.getMessage());
+            System.debug(LoggingLevel.ERROR, 'Error getting picklist values: ' + e.getMessage());
         }
         
         return picklistMap;
@@ -374,20 +374,21 @@ public with sharing class StnryAssetEnvrSrRecordsController {
                 }
             }
         } catch (Exception e) {
-            System.debug('Error getting dependent picklist values: ' + e.getMessage());
+            System.debug(LoggingLevel.ERROR, 'Error getting dependent picklist values: ' + e.getMessage());
         }
         
         return options;
     }
     
     private static String findRelationshipField(Schema.SObjectType sObjectType) {
-        String sObjectName = sObjectType.getDescribe().getName();
+        Schema.DescribeSObjectResult objectDescribe = sObjectType.getDescribe();
+        String sObjectName = objectDescribe.getName();
         
         if (sObjectNameToRelationshipField.containsKey(sObjectName)) {
             return sObjectNameToRelationshipField.get(sObjectName);
         }
         
-        Map<String, Schema.SObjectField> fieldMap = sObjectType.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectField> fieldMap = objectDescribe.fields.getMap();
         
         for (String fieldName : fieldMap.keySet()) {
             Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName).getDescribe();
